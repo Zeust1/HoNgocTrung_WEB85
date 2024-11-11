@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 import CustomerModel from './model/customers.js'
 import ProductModel from './model/products.js'
 import OrderModel from './model/orders.js'
+import data from '../LS02/data.js'
 
 mongoose.connect('mongodb+srv://WEB85_LS04_ADMIN:WEB85_LS04_PASSWORD@cluster0.5spih.mongodb.net/WEB85')
 
@@ -71,41 +72,6 @@ app.post('/api/v1/products', async (req, res) => {
         })
     }
 })
-
-// // them order moi
-// app.post('/api/v1/orders', async (req, res) => {
-//     try {
-//         const {orderId, customerId, productId, quantity, totalPrice} = req.body
-//         if(!orderId) throw new Error("orderId is required");
-//         if(!customerId) throw new Error("customerId is required");
-//         if(!productId) throw new Error("productId is required");
-//         if(!quantity) throw new Error("quantity is required");
-//         if(!totalPrice) throw new Error("totalPrice is required");
-
-        
-//         const newOrder = await OrderModel.create({
-//             orderId,
-//             customerId,
-//             productId,
-//             quantity,
-//             totalPrice
-//         })
-
-//         res.status(201).send({
-//             message: 'New order is created',
-//             data: newOrder,
-//             success: true
-//         })
-
-//     } catch (error) {
-//         res.status(403).send({
-//             message: error.message,
-//             data: null,
-//             success: false
-//         })
-//     }
-// })
-
 
 // cau 1
 app.get('/api/v1/customers', async (req, res) => {
@@ -197,8 +163,11 @@ app.put('/api/v1/orders/:orderId', async (req, res) => {
     const { quantity } = req.body
     try {
         const findItem = await OrderModel.find({orderId : orderId})
+        const productItem = await ProductModel.find({id : findItem[0].productId})
         if(!findItem) throw new Error('orderId is not found')
-        const updatedOrder = await OrderModel.findOneAndUpdate({orderId : orderId},{totalPrice: (findItem[0].totalPrice/findItem[0].quantity)},{quantity : quantity})
+        await OrderModel.findOneAndUpdate({orderId : orderId},{quantity: quantity})
+        await OrderModel.findOneAndUpdate({orderId : orderId},{totalPrice: quantity * productItem[0].price})
+
         res.status(200).send({
             message: 'updated order',
             data: findItem,
@@ -212,4 +181,25 @@ app.put('/api/v1/orders/:orderId', async (req, res) => {
         })
     }
 })
+
+// cau 9
+app.delete('/api/v1/customers/:customerId', async (req, res) => {
+    const { customerId } = req.params
+    try {
+        if(!customerId) throw new Error('customer is not found')
+        const customer = await CustomerModel.findOneAndDelete({id : customerId})
+        res.status(200).send({
+            message: 'customer has been deleted',
+            data: customer[0],
+            success: true
+        })
+    } catch (error) {
+        res.status(404).send({
+            message: error.message,
+            data: null,
+            success: false
+        })
+    }
+})
+
 app.listen(8080, () => console.log('server is running'))
