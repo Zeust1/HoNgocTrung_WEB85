@@ -9,10 +9,10 @@ const customersControllers = {
 
     getCustomerById: async (req, res) => {
         const  id  = req.params
-        const customer = await customersModel.find(id)
+        const customer = await customersModel.find({id : id})
         try {
             if(!customer[0]) throw new Error('customer id is not found')
-            res.send(customer)
+            res.send(customer[0])
         } catch (error) {
             res.status(403).send({
                 message: error.message,

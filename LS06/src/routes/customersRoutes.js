@@ -4,9 +4,9 @@ import authen from "../middleware/authen.js";
 
 
 const customersRoutes = Router()
-customersRoutes.route('/:id').get(customersControllers.getCustomerById)
-customersRoutes.route('/:customerId/orders').get(customersControllers.getOrderById)
-customersRoutes.route('/').get(customersControllers.getAllCustomers).post(authen.uniQueCustomer,customersControllers.createNewCustomer)
+customersRoutes.route('/:id').get( authen.authentic,customersControllers.getCustomerById)
+customersRoutes.route('/:customerId/orders').get(authen.authentic ,customersControllers.getOrderById)
+customersRoutes.route('/').get(authen.authentic ,customersControllers.getAllCustomers).post(authen.authentic ,authen.uniQueCustomer,customersControllers.createNewCustomer)
 
 
 

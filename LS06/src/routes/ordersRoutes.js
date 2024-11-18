@@ -4,8 +4,9 @@ import authen from "../middleware/authen.js";
 
 
 const ordersRoutes = Router()
+ordersRoutes.route('/:orderId').put(authen.isOrderId, ordersControllers.updateOrderById)
 ordersRoutes.route('/highvalue').get(ordersControllers.getHighValue)
-ordersRoutes.route('/').post(authen.isExistOrderValue,ordersControllers.createNewOrder)
+ordersRoutes.route('/').post(authen.isExistOrderValue, ordersControllers.createNewOrder)
 
 
 

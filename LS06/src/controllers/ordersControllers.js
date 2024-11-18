@@ -3,6 +3,7 @@ import productsModel from "../models/productsModel.js"
 import { v4 as uniqueId } from 'uuid';
 
 const ordersControllers = {
+
     getHighValue: async (req, res) => {
         const ouput = await ordersModel.find({totalPrice: {$gt: 10000000}})
         res.send(ouput)
@@ -38,6 +39,21 @@ const ordersControllers = {
                 success: false
             })
         }
+    },
+
+    updateOrderById: async (req, res) => {
+        const orderId = req.params
+        const { quantity } = req.body
+        const order = await ordersModel.find(orderId)
+        const product = await productsModel.find({id: order[0].productId})
+        const price = product[0].price
+        const updatedOrder = await ordersModel.findOneAndUpdate(orderId,{quantity: quantity, totalPrice: quantity * price})
+        res.status(200).send({
+            message: 'Order is updated',
+            data: updatedOrder,
+            success: true
+        })
+        console.log(orderId)
     }
 }
 
