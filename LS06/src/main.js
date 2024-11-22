@@ -20,7 +20,7 @@ app.use(express.json())
 // api
 app.use('/api/v1/customers/getApiKey/',getApiKey)
 
-app.use('/api/v1/customers',authen.authentic,customersRoutes)
+app.use('/api/v1/customers',customersRoutes)
 
 app.use('/api/v1/orders',authen.authentic,ordersRoutes)
 
