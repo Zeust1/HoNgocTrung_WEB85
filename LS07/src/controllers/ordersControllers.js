@@ -67,11 +67,30 @@ const ordersControllers = {
     },
     deleteOrder: async (req, res) => {
         const id = req.params
-            const deletedOrder = await ordersModel.find({id})
+
+        const { api_key } = req.query
+        const parseApiKey = api_key.split("-$")[3]
+        const getSalt = parseApiKey.split("")
+        const deleteLastChar = getSalt.pop()
+        const salt = getSalt.join("")
+        try {
+            const order = await ordersModel.findOne({orderId: id.id})
+            if(!order) throw new Error('order is not found')
+            const customer = await customersModel.findOne({salt})
+            if(!customer) throw new Error('user is not valid')
+            if(customer.id !== order.customerId) throw new Error('user is not valid')
+            const deletedOrder = await ordersModel.findOneAndDelete({orderId: id.id})
             res.status(200).send({
                 message: 'order is deleted',
                 data: deletedOrder
             })
+        } catch (error) {
+            res.status(403).send({
+                message: error.message
+            })
+        }
+
+
     }
 }
 
